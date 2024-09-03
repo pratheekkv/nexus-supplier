@@ -1,0 +1,20 @@
+spring:
+  config.activate.on-profile: default
+  sql.init.schema-locations: classpath:schema-h2.sql
+  web.resources.static-locations: file:./app/
+cds:
+  data-source.auto-config.enabled: false
+  security:
+    mock:
+      users:
+        privi:
+          privileged: true
+          password: privi
+        admin:
+          password: admin
+          attributes:
+            "businessPartner[0]": "10401010"
+        user:
+          password: user
+    authentication:
+      normalize-provider-tenant: true

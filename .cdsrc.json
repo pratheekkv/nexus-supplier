@@ -1,0 +1,8 @@
+{
+    "sql": {
+        "native_hana_associations": false
+    },
+    "dependencies": {
+        "@cap-js/hana": "^1"
+    }
+}
