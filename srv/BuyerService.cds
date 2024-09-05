@@ -13,7 +13,7 @@ service  BuyerService {
     entity ItemType     as projection on EventService.ItemType; 
 
     extend projection ItemTerms with {
-        termValue : Composition of many ItemTermValues on termValue.term = $self.id and termValue.item = $self.Item
+        termValue : Composition of many ItemTermValues on termValue.term = $self.term and termValue.item = $self.item
     };
 
     @cds.persistence.skip

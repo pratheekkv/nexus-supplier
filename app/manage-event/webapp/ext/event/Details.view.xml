@@ -1,0 +1,63 @@
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns:mdc="sap.ui.mdc" xmlns:core="sap.ui.core" xmlns:table="sap.ui.mdc.table" xmlns:m="sap.m"
+    xmlns:layout="sap.uxap" xmlns:macros="sap.fe.macros"
+    xmlns:html="http://www.w3.org/1999/xhtml" controllerName="manageevent.ext.event.Details" modelContextChange="onModelContextChange">
+    <layout:ObjectPageLayout id="ObjectPageLayout" enableLazyLoading="true" upperCaseAnchorBar="false"
+            headerContentPinned="true">
+            <layout:headerTitle>
+                <layout:ObjectPageDynamicHeaderTitle>
+                    <layout:heading>
+                        <m:Title text="{description}"/>
+                    </layout:heading>
+
+                    <layout:actions>
+                        <m:Button text="Edit" type="Emphasized" press="onEdit" visible="{= !${ui>/isEditable}}"/>
+                        <m:Button type="Transparent" text="Delete"/>
+                        <m:OverflowToolbarButton icon="sap-icon://action" type="Transparent" text="Share" tooltip="action"/>
+                    </layout:actions>
+                </layout:ObjectPageDynamicHeaderTitle>
+            </layout:headerTitle>        
+            
+            <layout:sections>
+
+                <layout:ObjectPageSection titleUppercase="false" title="Event Details">
+                    <layout:subSections>
+                        <layout:ObjectPageSubSection title=" " mode="Expanded" titleUppercase="false">
+                            <layout:blocks>
+                        <macros:Form metaPath="@com.sap.vocabularies.UI.v1.FieldGroup#GeneralInformation" id="externalSystemIntegration">
+							<macros:layout type="ResponsiveGridLayout" columnsM="1" singleContainerFullSize="true" labelSpanL="1" labelSpanM="1" labelSpanS="1" emptySpanL="7" />
+						</macros:Form>
+                            </layout:blocks>
+                        </layout:ObjectPageSubSection>
+                    </layout:subSections>
+                </layout:ObjectPageSection>
+                <layout:ObjectPageSection titleUppercase="false" title="Items">
+                    <layout:subSections>
+                        <layout:ObjectPageSubSection title=" " mode="Expanded" titleUppercase="false">
+                            <layout:blocks>
+                                <mdc:Table
+                                    id="treeTable"
+                                    delegate="{
+                                        name: 'manageevent/delegates/ItemTableDelegate',
+                                        payload: {
+                                            bindingPath: '/items'				
+                                        }
+                                        }"
+                                    selectionMode="None"
+                                    showRowCount="false"
+                                    enableExport="true"
+                                    p13nMode="Column,Sort"
+                                    width="100%">
+                                    <mdc:columns>
+                                        <table:Column id="ItemId" header="Item">
+                                            <m:Text text="{node_id}">							
+                                            </m:Text>
+                                        </table:Column>
+                                    </mdc:columns>
+                                </mdc:Table>
+                            </layout:blocks>
+                        </layout:ObjectPageSubSection>
+                    </layout:subSections>
+                </layout:ObjectPageSection>
+            </layout:sections>
+        </layout:ObjectPageLayout>
+</mvc:View>

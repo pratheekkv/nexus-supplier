@@ -1,0 +1,5 @@
+"EVENT_ID","ID","DESCRIPTION","DATATYPE"
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,POSSIBLEDELIVERY,Delivery Date,Date
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,QTYAVAILABLE,Quantity Available,Boolean
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,PRICE,Price,Integer
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,QUANTITY,Quantity,Integer

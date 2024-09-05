@@ -37,16 +37,15 @@ entity Item : cuid {
 
   virtual MatchedDescendantCount : Integer64;
 
-  terms: Composition of many ItemTerms on terms.Item = $self;
+  itemterms: Composition of many ItemTerms on itemterms.item = $self;
   event: Association to one Event;
   parent : Association to one Item on parent.node_id = parent_id;
 
 }
 
-entity ItemTerms {
-  key id : Association to one Terms;
-  key Item: Association to Item;
-  termValue: Composition of many ItemTerms on termValue.id = $self.id and termValue.Item = $self.Item;
+entity ItemTerms : cuid {
+  term : Association to Terms;
+  item: Association to Item;
 
 }
 

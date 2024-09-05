@@ -17,6 +17,20 @@ ConnectedFields #ConnectedData   : {
             }
         }
     },
+
+    Facets  : [
+         {
+            $Type : 'UI.CollectionFacet',
+            Facets :[
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Target : '@UI.Identification',
+                },
+            ]
+            
+        }
+    ],
+
     FieldGroup #BiddingRules: {
       Data : [
         { 
@@ -51,9 +65,30 @@ ConnectedFields #ConnectedData   : {
         },
         {
             $Type: 'UI.DataField',
-            Value: createdBy,
+            Value: owner,
             ![@Common.FieldControl] : #ReadOnly,
-            Label : 'Created By' 
+            Label : 'Owner' 
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: status,
+            Label : 'Status' 
+        }       
+    ],
+
+    FieldGroup #GeneralInformation :{
+        $Type : 'UI.FieldGroupType',
+        Data: [
+
+        {
+            $Type: 'UI.DataField',
+            Value: description,
+            Label : 'Description' 
+        },
+        {
+            $Type: 'UI.DataField',
+            Value: type_id,
+            Label : 'Event Type' 
         },
         {
             $Type: 'UI.DataField',
@@ -67,5 +102,6 @@ ConnectedFields #ConnectedData   : {
             Label : 'Status' 
         }       
     ]
+    } 
     
 });

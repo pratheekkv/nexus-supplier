@@ -1,0 +1,34 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:mdc="sap.ui.mdc" xmlns:table="sap.ui.mdc.table">
+    <mdc:Table
+                                id="treeTable"
+                                type="TreeTable"
+                                delegate="{
+                                    name: 'manageevent/delegates/ItemTableDelegate',
+                                    payload: {
+                                        bindingPath: '/items'				
+                                    }
+                                    }"
+                                selectionMode="None"
+                                showRowCount="false"
+                                enableExport="true"
+                                p13nMode="Column,Sort"
+                                width="100%">
+                                <mdc:actions>
+
+                    <Button
+                        id="addItemButton"
+                        text="Add Item"
+                        press="onAddItem"
+                        enabled="true"
+                    >
+                    </Button>
+
+				</mdc:actions>
+                                <mdc:columns>
+                                    <table:Column header="Name">
+                                        <Text text="{description}">							
+                                        </Text>
+                                    </table:Column>
+                                </mdc:columns>
+                            </mdc:Table>
+</core:FragmentDefinition>

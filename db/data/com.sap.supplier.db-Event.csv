@@ -1,0 +1,3 @@
+ID;description;type_ID;version;status;owner;eventBiddingEnds;eventDurationUOM;awardDate;startBidOnPublish;biddingEnd;biidingEndUnit
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae;Event 1 Description;type1;1.0;Open;John Doe;7;Days;2024-09-15;true;14;Days
+f623c9be-7803-4f7d-b6e5-523b4bcdfb55;Event 2 Description;type2;1.1;Closed;Jane Doe;5;Weeks;2024-09-20;false;30;Weeks

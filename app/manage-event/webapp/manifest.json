@@ -56,7 +56,7 @@
     }
   },
   "sap.ui5": {
-    "flexEnabled": true,
+    "flexEnabled": false,
     "dependencies": {
       "minUI5Version": "1.127.1",
       "libs": {
@@ -98,50 +98,36 @@
       "config": {},
       "routes": [
         {
-          "pattern": ":?query:",
-          "name": "EventList",
-          "target": "EventList"
+          "name": "EventDetails",
+          "pattern": "Event({key})",
+          "target": "EventDetails"
         },
         {
-          "pattern": "Event({key}):?query:",
-          "name": "EventObjectPage",
-          "target": "EventObjectPage"
+          "name": "ProjectMain",
+          "pattern": ":?query:",
+          "target": "ProjectMain"
         }
       ],
       "targets": {
-        "EventList": {
+        "ProjectMain": {
           "type": "Component",
-          "id": "EventList",
-          "name": "sap.fe.templates.ListReport",
+          "id": "ProjectMain",
+          "name": "sap.fe.core.fpm",
           "options": {
             "settings": {
-              "contextPath": "/Event",
-              "variantManagement": "Page",
-              "entitySet" : "Event",
-              "navigation": {
-                "Event": {
-                  "detail": {
-                    "route": "EventObjectPage"
-                  }
-                }
-              },
-              "controlConfiguration": {
-                "@com.sap.vocabularies.UI.v1.LineItem": {
-                  "tableSettings": {
-                    "type": "ResponsiveTable"
-                  }
-                }
-              }
+              "viewName": "manageevent.ext.main.Main",
+              "contextPath": "/Event"
             }
           }
         },
-        "EventObjectPage": {
+
+        "EventDetails": {
           "type": "Component",
-          "id": "EventObjectPage",
-          "name": "sap.fe.templates.ObjectPage",
+          "id": "EventDetails",
+          "name": "sap.fe.core.fpm",
           "options": {
             "settings": {
-              "editableHeaderContent": false,
+              "viewName": "manageevent.ext.event.Details",
               "contextPath": "/Event"
             }
           }
