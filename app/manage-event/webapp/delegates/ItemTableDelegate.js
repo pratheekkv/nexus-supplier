@@ -35,6 +35,9 @@ sap.ui.define([
 
             return fetchModel(oTable)
 			.then(async (model) => {
+                oTable.attachModelContextChange(function(oEvent){
+                    oEvent.getSource().rebind();
+                });
                 var aProperties = [];
                 try{
                     var oContext = oTable.getBindingContext();
@@ -68,15 +71,26 @@ sap.ui.define([
          * Bind the columns to the table.
          */
        var _addColumn = function (oTable,sId, sPropertyKey, datatype) {
- 
-        var field = new FieldBase({ value: { parts : [ { path : 'itemterms', mode: 'OneWay'} , {value : sPropertyKey}  ],
-            type:  new TermValueNumber()},
-           editMode: "{=${ui>/isEditable}=== true ? 'Editable' : 'ReadOnly'}" });   
-        // var oType = new TermValueNumber();
+        var dataType = new TermValueNumber();
+        var field = new FieldBase({ value: { parts : [ { path : 'itemterms', mode: 'OneWay'} , {value : sPropertyKey}, { path : 'IsActiveEntity'}  ],
+            type:  dataType},
+            editMode: "{=${ui>/isEditable}=== true ? 'Editable' : 'ReadOnly'}" });   
+            field.attachChange(function(oEvent){
+                    var parts = oEvent.getSource().getBinding('value').getValue();
+                    if(parts[0] && Array.isArray(parts)){
+                        const foundObject = parts[0].find(obj => obj.term_id === parts[1]);
+                        if(foundObject){
+                            if(foundObject.termValue[0]){
+                                oEvent.getSource().sBindingPath = `/ItemTermValues(ID=${foundObject.termValue[0].ID},IsActiveEntity=${foundObject.termValue[0].IsActiveEntity})`;
+                            }
+                        }   
+                    }
 
-        field.attachChange(function(oEvent){
-            debugger;
-        });
+                if(oEvent.getSource().sBindingPath){
+                   var oBindingContext = oEvent.getSource().getModel().getKeepAliveContext(oEvent.getSource().sBindingPath);
+                   oBindingContext.setProperty('value',oEvent.getParameter('value'));
+                }
+            });
         var oColumn = new sap.ui.mdc.table.Column(sId,{
                 header: sPropertyKey,
                 dataProperty: sPropertyKey,

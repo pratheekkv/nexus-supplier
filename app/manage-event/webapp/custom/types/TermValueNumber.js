@@ -15,15 +15,16 @@ sap.ui.define([
 
 
 	Number.prototype.formatValue = function(parts){
-        if(parts[0]){
+        if(parts[0] && Array.isArray(parts)){
             const foundObject = parts[0].find(obj => obj.term_id === parts[1]);
             if(foundObject){
-                if(foundObject.termValue[0]){
+                if(foundObject.termValue[0]){                  
                     return foundObject.termValue[0].value;
                 }
             }
             return "";      
         }
+        return parts;
 
       };
 

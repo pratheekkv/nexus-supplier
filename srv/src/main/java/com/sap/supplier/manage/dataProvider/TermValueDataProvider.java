@@ -34,12 +34,18 @@ public class TermValueDataProvider {
 
                 // Create a TermValue object
                 ItemTermValues termValue = ItemTermValues.create();
-
+                termValue.setId(itemTermFull.getId());
                 termValue.setTermEventId(itemTermFull.getTermEventId());
                 termValue.setItemId(itemTermFull.getItemId());
-                termValue.setTermId(itemTermFull.getTermId());   
+                termValue.setTermId(itemTermFull.getTermId()); 
+                termValue.setIsActiveEntity(true);  
                 if(itemTermFull.getTermId().equals("PRICE"))
-                    termValue.setValue("10");
+                    if("d60d8e45-7c5f-4781-872c-9fee17a6672f".equals(itemTermFull.getItemId())){
+                        termValue.setValue("44");
+                    }else{
+                        termValue.setValue("10");
+                    }
+                    
 
 
                 // Add the TermValue to the list

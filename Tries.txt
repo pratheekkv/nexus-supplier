@@ -1,27 +1,35 @@
 package com.sap.supplier.manage.handlers;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 import com.sap.cds.Result;
+import com.sap.cds.ResultBuilder;
 import com.sap.cds.Row;
 import com.sap.cds.impl.builder.model.ExpandBuilder;
 import com.sap.cds.ql.cqn.CqnSelect;
+import com.sap.cds.ql.cqn.CqnSource;
 import com.sap.cds.ql.cqn.CqnUpdate;
+import com.sap.cds.services.cds.CdsCreateEventContext;
+import com.sap.cds.services.cds.CdsDeleteEventContext;
 import com.sap.cds.services.cds.CdsUpdateEventContext;
 import com.sap.cds.services.cds.CqnService;
 import com.sap.cds.services.draft.ActiveReadEventContext;
+import com.sap.cds.services.draft.DraftPatchEventContext;
 import com.sap.cds.services.draft.DraftService;
-import com.sap.cds.services.environment.CdsProperties.Drafts;
 import com.sap.cds.services.handler.EventHandler;
 import com.sap.cds.services.handler.annotations.After;
 import com.sap.cds.services.handler.annotations.On;
 import com.sap.cds.services.handler.annotations.ServiceName;
-import com.sap.db.util.org.java_websocket.drafts.Draft;
 import com.sap.supplier.manage.CqnModifier.BuyerServiceCqnModifier;
 import com.sap.supplier.manage.dataProvider.TermValueDataProvider;
 
@@ -29,6 +37,9 @@ import cds.gen.buyerservice.BuyerService_;
 import cds.gen.buyerservice.Event;
 import cds.gen.buyerservice.Event_;
 import cds.gen.buyerservice.Item;
+import cds.gen.buyerservice.ItemTermValues;
+import cds.gen.buyerservice.ItemTermValues_;
+import cds.gen.buyerservice.ItemTerms;
 import cds.gen.buyerservice.ItemTerms_;
 import cds.gen.buyerservice.Item_;
 import cds.gen.eventservice.EventService;
@@ -54,10 +65,14 @@ public class BuyerServiceHandler implements EventHandler {
         // Fetch all rows
         List<Row> rows = result.listOf(Row.class);
         rows.forEach(row -> {
+            // Convert the row to a map to manipulate it
             Map<String, Object> rowMap = row;
+            // Add or update the `IsActiveEntity` property
             rowMap.put("IsActiveEntity", true);
+            // Update the row with the modified map
             row.putAll(rowMap);
         });
+        // result.inlineCount();
         context.setResult(result);
     }
 
@@ -67,11 +82,16 @@ public class BuyerServiceHandler implements EventHandler {
         if (termValueExpand == null) {
             return;
         }
+
         Result result = context.getResult();
+
         List<Event> events = result.listOf(Event.class);
         for (Event event : events) {
+
             for (Item item : event.getItems()) {
+
                 terValueDataProvider.fillTermValues(item.getItemterms());
+
             }
         }
         context.setResult(events);
@@ -84,11 +104,41 @@ public class BuyerServiceHandler implements EventHandler {
             return;
         }
         Result result = context.getResult();
+
         List<Item> items = result.listOf(Item.class);
+
+        // Map<String, Map<String, List<String>>> groupedData = items.stream()
+        // // FlatMap each Item's ItemTerms into a stream of (eventId, itemId, termId)
+        // .flatMap(item -> item.getItemterms().stream()
+        // .map(itemTerms -> new ImmutableTriple<String,String,String>(
+        // itemTerms.getTermEventId(),
+        // itemTerms.getItemId(),
+        // itemTerms.getTermId())))
+        // // Collect the result into a map grouped by eventId, then by itemId
+        // .collect(Collectors.groupingBy(
+        // Triple::getLeft, // Group by eventId
+        // Collectors.groupingBy(
+        // Triple::getMiddle, // Group by itemId within each eventId
+        // Collectors.mapping(Triple::getRight, Collectors.toList()) // Collect termIds
+        // into a list
+        // )
+        // ));
+
+        // List<Triple<String, String, String>> triplets = items.stream()
+        // .flatMap(item -> item.getItemterms().stream()
+        // .map(itemTerms -> new ImmutableTriple<>( itemTerms.getTermEventId(),
+        // itemTerms.getItemId(), itemTerms.getTermId())
+        // )
+        // ).collect(Collectors.toList());
+
         for (Item item : items) {
+
             terValueDataProvider.fillTermValues(item.getItemterms());
+
         }
+
         context.setResult(items);
+
     }
 
     @After(entity = ItemTerms_.CDS_NAME)
@@ -96,13 +146,34 @@ public class BuyerServiceHandler implements EventHandler {
         ExpandBuilder termValueExpand = cqnModifier.getTermValueExpand(context.getCqn());
     }
 
+    @On(event = DraftService.EVENT_ACTIVE_READ, entity = ItemTermValues_.CDS_NAME)
+    public void itemTermValuesActiveRead(ActiveReadEventContext context) {
+        CqnSelect cqn = context.getCqn();
+        CqnSource from = cqn.from();
+        Result res = ResultBuilder.selectedRows(Collections.emptyList()).result();
+        context.setResult(res);
 
-    @On(event = { CqnService.EVENT_UPDATE }, entity = Event_.CDS_NAME)
-    public void handleEventUpdate(CdsUpdateEventContext context) {
-        List<Map<String, Object>> values = cqnModifier.getItemTermValueOnUpdateEvent(context.getCqn());
-        CqnUpdate update = cqnModifier.removeItemTermValueOnUpdateEvent(context.getCqn());
-        Result result = eventService.run(update);
+    }
+
+    @On(event = DraftService.EVENT_CREATE)
+    public void redirectCreateToEventService(CdsCreateEventContext context) {
         context.setResult(eventService.run(context.getCqn()));
-    }  
+    }
+
+    @On(event = CqnService.EVENT_CREATE, entity = ItemTermValues_.CDS_NAME)
+    public void createItemValue(CdsCreateEventContext context) {
+        context.setResult(eventService.run(context.getCqn()));
+    } 
+    
+    // @On(event = CqnService.EVENT_UPDATE, entity = ItemTermValues_.CDS_NAME)
+    // public void updateItemValue(CdsUpdateEventContext context) {
+    //     CqnUpdate update = context.getCqn();
+    //     context.setCompleted();
+    // }   
+
+    @On(event = CqnService.EVENT_DELETE)
+    public void redirectDeleteToEventService(CdsDeleteEventContext context) {
+        context.setResult(eventService.run(context.getCqn()));
+    }
 
 }

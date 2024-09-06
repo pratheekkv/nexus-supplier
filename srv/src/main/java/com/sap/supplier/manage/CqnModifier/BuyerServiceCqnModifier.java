@@ -2,6 +2,7 @@ package com.sap.supplier.manage.CqnModifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import com.sap.cds.impl.parser.token.RefSegmentBuilder;
 import com.sap.cds.ql.RefBuilder.RefSegment;
 import com.sap.cds.ql.Select;
 import com.sap.cds.ql.StructuredTypeRef;
+import com.sap.cds.ql.Update;
 import com.sap.cds.ql.cqn.CqnExpression;
 import com.sap.cds.ql.cqn.CqnPredicate;
 import com.sap.cds.ql.cqn.CqnReference.Segment;
@@ -22,6 +24,7 @@ import com.sap.cds.ql.cqn.CqnSelect;
 import com.sap.cds.ql.cqn.CqnSelectListItem;
 import com.sap.cds.ql.cqn.CqnStar;
 import com.sap.cds.ql.cqn.CqnStructuredTypeRef;
+import com.sap.cds.ql.cqn.CqnUpdate;
 
 @Component
 public class BuyerServiceCqnModifier {
@@ -188,4 +191,41 @@ public class BuyerServiceCqnModifier {
 
         return null;
     }
+
+    public CqnUpdate removeItemTermValueOnUpdateEvent(CqnUpdate cqn){
+        List<Map<String, Object>> entries = cqn.entries();
+
+        for (Map<String,Object> map : entries) {
+            List<Map<String, Object>> items = (List<Map<String,Object>>)map.get("items");
+            for (Map<String,Object> item : items) {
+                List<Map<String, Object>> itemterms = (List<Map<String,Object>>)item.get("itemterms");
+                for (Map<String,Object> itemterm : itemterms) {
+                   if(itemterm.containsKey("termValue")){
+                    itemterm.remove("termValue");
+                   }
+                }
+            }
+        }
+        return Update.copy(cqn).entries(entries);
+    }
+
+    public List<Map<String,Object>> getItemTermValueOnUpdateEvent(CqnUpdate cqn){
+        List<Map<String, Object>> entries = cqn.entries();
+
+        List<Map<String,Object>> values = new ArrayList<>();
+
+        for (Map<String,Object> map : entries) {
+            List<Map<String, Object>> items = (List<Map<String,Object>>)map.get("items");
+            for (Map<String,Object> item : items) {
+                List<Map<String, Object>> itemterms = (List<Map<String,Object>>)item.get("itemterms");
+                for (Map<String,Object> itemterm : itemterms) {
+                    List<Map<String, Object>> termValues = (List<Map<String,Object>>)itemterm.get("termValue");
+                    values.addAll(termValues);
+                }
+                
+            }
+        }
+
+        return values;
+    }    
 }

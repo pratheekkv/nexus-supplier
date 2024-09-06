@@ -30,7 +30,24 @@ sap.ui.define(
                 var oContext = this.getView().getBindingContext();
                 this.getView().setBusy(true);
                 await this.getExtensionAPI().getEditFlow().editDocument(oContext);
+                this.getView().getModel().refresh();
                 this.getView().setBusy(false);
+                
+            },
+
+            onSave : async function(){
+                await this.editFlow.saveDocument(this.getView().getBindingContext());
+                var uiModel = this.getView()?.getModel("ui");
+                uiModel.setProperty("/isEditable", false);
+                this.getView()?.getModel().refresh();
+            },
+    
+            onCancel : async function(oEvent) {
+                await this.editFlow.cancelDocument(this.getView().getBindingContext(), { cancelButton: oEvent.getSource(), skipDiscardPopover: true });
+                var uiModel = this.getView()?.getModel("ui");
+                uiModel.setProperty("/isEditable", false);
+                this.getView()?.getModel().refresh();
+
             }
 
             /**

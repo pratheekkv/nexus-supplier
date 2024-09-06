@@ -2,7 +2,7 @@ using { com.sap.supplier.db as db } from '../db/Events';
 using { cuid } from '@sap/cds/common';
 @odata.apply.transformations
 service EventService {
-    @odata.draft.enabled
+    // @odata.draft.enabled
     entity Event        as projection on db.Event;
     entity Item         as projection on db.Item;
     entity ItemTerms    as projection on db.ItemTerms;
