@@ -1,5 +1,7 @@
 using { com.sap.supplier.db as db } from '../db/Events';
-using { cuid } from '@sap/cds/common';
+using { com.sap.supplier.db as Master } from '../db/MasterData';
+
+
 @odata.apply.transformations
 service EventService {
     // @odata.draft.enabled
@@ -11,5 +13,6 @@ service EventService {
     entity TermRange     as projection on db.TermRange;
     entity EventType    as projection on db.EventType;
     entity ItemType     as projection on db.ItemType;
+    entity TermsVH      as projection on Master.TermsMaster;
     
 }

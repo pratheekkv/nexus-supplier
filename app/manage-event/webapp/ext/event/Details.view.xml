@@ -53,6 +53,10 @@
                                             </m:Text>
                                         </table:Column>
                                     </mdc:columns>
+                                    <mdc:actions>
+                                         <m:Button id="addTermButton" enabled="{= !${ui>isEditable}}" press="onAddTerm" text="Add Term" visible='{ui>/isEditable}'>
+                                        </m:Button>
+				                    </mdc:actions>                                    
                                 </mdc:Table>
                             </layout:blocks>
                         </layout:ObjectPageSubSection>

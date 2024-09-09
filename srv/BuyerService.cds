@@ -8,9 +8,10 @@ service  BuyerService {
     entity ItemTerms    as projection on EventService.ItemTerms;
     entity Supplier     as projection on EventService.Supplier;
     entity Terms        as projection on EventService.Terms;
-    entity TermRange     as projection on EventService.TermRange;
+    entity TermRange    as projection on EventService.TermRange;
     entity EventType    as projection on EventService.EventType;
     entity ItemType     as projection on EventService.ItemType; 
+    entity TermsVH      as projection on EventService.TermsVH;
 
     extend projection ItemTerms with {
         termValue : Composition of many ItemTermValues on termValue.term = $self.term and termValue.item = $self.item

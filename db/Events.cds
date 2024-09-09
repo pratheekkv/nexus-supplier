@@ -22,25 +22,11 @@ entity Event : cuid, managed {
 
 entity Item : cuid {
   node_id: String;
-
   parent_id  : type of node_id;
-
   itemType : Association to ItemType;
-
-  virtual LimitedDescendantCount : Integer64;
-
-  virtual DistanceFromRoot       : Integer64;
-
-  virtual DrillState             : String;
-
-  virtual Matched                : Boolean;
-
-  virtual MatchedDescendantCount : Integer64;
-
   itemterms: Composition of many ItemTerms on itemterms.item = $self;
   event: Association to one Event;
   parent : Association to one Item on parent.node_id = parent_id;
-
 }
 
 entity ItemTerms : cuid {
@@ -63,6 +49,7 @@ entity Terms {
   key Event: Association to one Event;
   description : String;  
   datatype : String;
+  isDropDown : Boolean;
   isMultiInput : Boolean;
   ranges: Composition of many TermRange on ranges.term = $self;
 }

@@ -43,7 +43,7 @@ public class TermValueDataProvider {
                     if("d60d8e45-7c5f-4781-872c-9fee17a6672f".equals(itemTermFull.getItemId())){
                         termValue.setValue("44");
                     }else{
-                        termValue.setValue("10");
+                        termValue.setValue("99");
                     }
                     
 

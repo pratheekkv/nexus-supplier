@@ -25,7 +25,6 @@ sap.ui.define([
             return "";      
         }
         return parts;
-
       };
 
     Number.prototype.parseValue = function(sValue, sSourceType) {

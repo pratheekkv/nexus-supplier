@@ -1,6 +1,7 @@
 package com.sap.supplier.manage.CqnModifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,6 +29,11 @@ import com.sap.cds.ql.cqn.CqnUpdate;
 
 @Component
 public class BuyerServiceCqnModifier {
+
+    List<String> keysToRemove = Arrays.asList(
+        "HasActiveEntity", "HasDraftEntity", 
+        "IsActiveEntity", "DraftAdministrativeData_DraftUUID"
+    );
 
     public CqnSelect getNewCqn(CqnSelect cqn) {
 
@@ -122,9 +128,16 @@ public class BuyerServiceCqnModifier {
                 .filter(item -> item.isExpand())
                 .collect(Collectors.toList());
 
-        List<CqnSelectListItem> selectedFields = cqn.items().stream()
-                .filter(item -> !item.isExpand())
+        List<CqnSelectListItem> selectedFieldStar = cqn.items().stream()
+                .filter(item -> !item.isExpand() && item instanceof CqnStar)
                 .collect(Collectors.toList());
+
+        List<CqnSelectListItem> selectedFields = cqn.items().stream()
+                .filter(item -> !item.isExpand() &&  !(item instanceof CqnStar) && !"IsActiveEntity".equals(item.asRef().displayName())
+                && !"HasActiveEntity".equals(item.asRef().displayName()) && !"HasDraftEntity".equals(item.asRef().displayName()) && !"DraftAdministrativeData_DraftUUID".equals(item.asRef().displayName()))
+                .collect(Collectors.toList());
+
+        selectedFields.addAll(selectedFieldStar);        
 
         for (CqnSelectListItem expandItem : expandedItems) {
             String expand = expandItem.toString();
@@ -227,5 +240,13 @@ public class BuyerServiceCqnModifier {
         }
 
         return values;
-    }    
+    }
+    
+    public List<Map<String, Object>> removeDraftFields(List<Map<String, Object>> entries){
+        entries.parallelStream().forEach(map -> {
+            keysToRemove.forEach(map::remove);
+        });
+
+        return entries;
+    }
 }

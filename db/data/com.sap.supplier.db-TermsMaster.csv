@@ -1,0 +1,4 @@
+"ID","DESCRIPTION","DATATYPE","ISDROPDOWN","ISMULTIINPUT"
+PRICE,Price,Integer,false,false
+QUANTITY,Quantity,Integer,false,false
+RAM,Ram(GB),Integer,true,false

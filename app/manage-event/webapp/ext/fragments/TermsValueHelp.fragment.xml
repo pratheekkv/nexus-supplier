@@ -1,0 +1,17 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Dialog id="selectListDialog" title="Available Terms" class="sapUiResponsivePadding--header sapUiResponsivePadding--content sapUiResponsivePadding--footer">
+    <content>
+      <List id="multiSelectList" mode="MultiSelect" items="{/TermsVH}" updateFinished="onTermFragmentUpdateFinish" selectionChange="onTermSelectionChange">
+          <items>
+              <StandardListItem title="{description}"  />
+          </items>
+      </List>
+    </content>
+	<beginButton>
+		<Button id="continue" text="Continue" type="Emphasized" />
+	</beginButton>
+	<endButton>
+		<Button id="cancel" text="Cancel" />
+	</endButton>      
+  </Dialog>
+</core:FragmentDefinition>

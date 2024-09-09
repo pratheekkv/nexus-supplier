@@ -1,8 +1,9 @@
 sap.ui.define(
     [
-        'sap/fe/core/PageController'
+        'sap/fe/core/PageController',
+        "manageevent/delegates/ItemTableDelegate"
     ],
-    function(PageController) {
+    function(PageController,ItemTableDelegate) {
         'use strict';
 
         return PageController.extend('manageevent.ext.event.Details', {
@@ -48,6 +49,112 @@ sap.ui.define(
                 uiModel.setProperty("/isEditable", false);
                 this.getView()?.getModel().refresh();
 
+            },
+
+            onAddTerm: function(oEvent){
+                    this._OpenDialog(function(){
+                    }).then(function(){
+                    })
+                    .catch(function(){
+                    });
+                
+            },
+            
+
+            _OpenDialog : function(fnAction){
+
+                return new Promise(
+					function (resolve, reject) {
+						this.loadFragment({
+								name: "manageevent.ext.fragments.TermsValueHelp",
+								controller: this
+							})
+							.then(function (approveDialog) {
+								//Dialog Continue button
+								approveDialog.getBeginButton().attachPress(function (oEvent) {
+									approveDialog.close();
+                                    approveDialog.addedItems.forEach(element => {
+                                        var oBindingContext = approveDialog.getBindingContext();
+                                        var oCreate =approveDialog.getModel().bindList(oBindingContext.getPath() + '/terms').create({
+                                            "id" : element,
+                                            "Event_ID" : oBindingContext.getProperty("ID")
+                                        });
+
+                                       var oTable = this.getView().byId('treeTable');
+                                       oCreate.oCreatedPromise.then(async function(a){
+                                        var ranges = await this.oContext.getModel().bindList(this.oContext.getPath() + '/ranges').requestContexts();
+                                        oTable.addColumn(ItemTableDelegate.addColumn(oTable,oCreate,ranges));
+
+                                       }.bind({oContext :oCreate, oTable : oTable }));
+                                       
+                                    });
+									resolve(null);
+								}.bind(this));
+								//Dialog Cancel button
+								approveDialog.getEndButton().attachPress(function (oEvent) {
+									approveDialog.close().destroy();
+									reject(null);
+								});
+								//consider dialog closing with Escape
+								approveDialog.attachAfterClose(function () {
+									approveDialog.close().destroy();
+									reject(null);
+								});
+                                approveDialog.removedItems = [];
+                                approveDialog.addedItems = [];
+								approveDialog.open();
+							}.bind(this));
+					}.bind(this)
+				);
+
+            },
+
+            onTermFragmentUpdateFinish : async function(oEvent){
+                var oListBinding = await oEvent.getSource().getModel().bindList(oEvent.getSource().getBindingContext().getPath() + '/terms');
+                var oSelectedTerms = await oListBinding.requestContexts();
+                var oList = this.byId("multiSelectList");
+                var aItems = oList.getItems();
+
+                aItems.forEach(function(oItem) {
+                    var oItemContext = oItem.getBindingContext();
+                    if (oItemContext) {
+                      var itemId = oItemContext.getProperty("id");
+                      var isSelected = oSelectedTerms.some(function(oTermBinding) {
+                        return oTermBinding.getProperty("id") === itemId;
+                      });
+                      oItem.setSelected(isSelected);
+                    }
+                  });
+
+            },
+
+            onTermSelectionChange: function(oEvent){
+                var isNew = oEvent.getParameter('selected');
+                var oItem = oEvent.getParameter('listItem');
+                var oDialog = oEvent.getSource().getParent();
+                var itemId = oItem.getBindingContext().getProperty("id");
+                if (isNew) {
+                    // Add to addedItems if not already present
+                    if (!oDialog.addedItems.includes(itemId)) {
+                        oDialog.addedItems.push(itemId);
+                    }
+                    // Remove from removedItems if it exists there
+                    var index = oDialog.removedItems.indexOf(itemId);
+                    if (index !== -1) {
+                        oDialog.removedItems.splice(index, 1);
+                    }
+                } else {
+                    // Only add to removedItems if not present in addedItems
+                    if (!oDialog.addedItems.includes(itemId) && !oDialog.removedItems.includes(itemId)) {
+                        oDialog.removedItems.push(itemId);
+                    }else if(oDialog.addedItems.includes(itemId)){
+                        var index = oDialog.addedItems.indexOf(itemId);
+                        if (index !== -1) {
+                            oDialog.addedItems.splice(index, 1);
+                        }
+                    }
+                }
+                
             }
 
             /**

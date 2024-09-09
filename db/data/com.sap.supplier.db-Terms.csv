@@ -1,3 +1,3 @@
-"EVENT_ID","ID","DESCRIPTION","DATATYPE"
-1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,PRICE,Price,Integer
-1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,QUANTITY,Quantity,Integer
+"EVENT_ID","ID","DESCRIPTION","DATATYPE","ISDROPDOWN","ISMULTIINPUT"
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,PRICE,Price,Integer,false,false
+1b34d77c-9c3f-4d9a-8344-2c3d80dcb1ae,QUANTITY,Quantity,Integer,false,false
